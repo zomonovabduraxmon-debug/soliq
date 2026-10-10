@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171a21">
+  <title>Soliq Nazorat — Shaxsiy kabinet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div id="toastRegion" class="toast-region" aria-live="polite"></div>
+
+  <main id="setupView" class="setup-view hidden">
+    <section class="setup-card">
+      <div class="brand-mark">SN</div>
+      <p class="eyebrow">BIR MARTA SOZLASH</p>
+      <h1>Saytni bazaga ulang</h1>
+      <p class="muted">Sayt turli kompyuterlarda bir xil ma’lumotlarni ko‘rsatishi uchun Supabase sozlamalarini <code>config.js</code> fayliga kiriting.</p>
+      <ol class="setup-steps">
+        <li>Supabase loyihasini yarating.</li>
+        <li><code>supabase-schema.sql</code> matnini SQL Editor’da bir marta bajaring.</li>
+        <li><code>config.js</code> ichiga Project URL va publishable/anon key’ni yozing.</li>
+        <li>Supabase Auth’dan bitta foydalanuvchi yarating va saytga kiring.</li>
+      </ol>
+      <p class="warning-note"><strong>Diqqat:</strong> <code>service_role</code> yoki boshqa maxfiy server kalitini hech qachon <code>config.js</code> fayliga yozmang.</p>
+    </section>
+  </main>
+
+  <main id="authView" class="auth-view hidden">
+    <section class="auth-card">
+      <div class="brand-lockup">
+        <div class="brand-mark">SN</div>
+        <div><strong>Soliq Nazorat</strong><span>Shaxsiy boshqaruv paneli</span></div>
+      </div>
+      <p class="eyebrow">SHAXSIY KABINET</p>
+      <h1>Yana xush kelibsiz</h1>
+      <p class="muted">Tashkilotlar va hisobotlaringizni boshqarish uchun tizimga kiring.</p>
+      <form id="loginForm" class="form-stack">
+        <label>Email manzil<input id="loginEmail" type="email" autocomplete="username" placeholder="sizning@emailingiz.uz" required></label>
+        <label>Parol<input id="loginPassword" type="password" autocomplete="current-password" placeholder="Parolingiz" required></label>
+        <p id="loginError" class="form-error hidden"></p>
+        <button class="btn btn-primary btn-wide" type="submit">Tizimga kirish <span aria-hidden="true">→</span></button>
+      </form>
+      <p class="auth-foot muted">Hisob Supabase boshqaruv panelida oldindan yaratiladi.</p>
+    </section>
+    <aside class="auth-visual">
+      <div class="visual-orb orb-one"></div><div class="visual-orb orb-two"></div>
+      <div class="visual-content">
+        <span class="visual-chip"><span class="pulse-dot"></span> Bitta joyda boshqaruv</span>
+        <h2>50+ tashkilot.<br><em>Bitta nazorat paneli.</em></h2>
+        <p>Hisobot muddati, PFX kalitlari va oylik to‘lovlarni tartibli boshqaring.</p>
+        <div class="visual-mini-grid"><div><strong>01</strong><span>Hisobotlar</span></div><div><strong>02</strong><span>Tashkilotlar</span></div><div><strong>03</strong><span>Moliyaviy holat</span></div></div>
+      </div>
+      <span class="visual-caption">SHAXSIY ISH MAYDONI · SOLIQ NAZORAT</span>
+    </aside>
+  </main>
+
+  <div id="appView" class="app-shell hidden">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand"><div class="brand-mark">SN</div><div><strong>Soliq Nazorat</strong><span>Shaxsiy kabinet</span></div></div>
+      <div class="nav-caption">ISH MAYDONI</div>
+      <nav class="main-nav" aria-label="Asosiy menyu">
+        <button class="nav-item active" data-tab="dashboard"><span class="nav-icon">◫</span><span>Dashboard</span></button>
+        <button class="nav-item" data-tab="organizations"><span class="nav-icon">▦</span><span>Tashkilotlar</span></button>
+        <button class="nav-item" data-tab="reports"><span class="nav-icon">☷</span><span>Hisobotlar nazorati</span></button>
+        <button class="nav-item" data-tab="finance"><span class="nav-icon">▤</span><span>Moliyaviy holat</span></button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="sidebar-help"><div class="help-icon">i</div><div><strong>Shaxsiy tizim</strong><span>Ma’lumotlar internetda saqlanadi</span></div></div>
+        <button id="logoutBtn" class="logout-btn"><span>↪</span> Chiqish</button>
+        <div class="sidebar-version">SOLIQ NAZORAT <span>·</span> 1.0</div>
+      </div>
+    </aside>
+
+    <section class="main-area">
+      <header class="topbar">
+        <button id="mobileMenuBtn" class="icon-btn mobile-menu" aria-label="Menyuni ochish">☰</button>
+        <div class="crumbs"><span>Shaxsiy kabinet</span><b>/</b><strong id="pageHeading">Dashboard</strong></div>
+        <div class="topbar-actions">
+          <label class="period-picker"><span>Davr</span><input id="periodInput" type="month" aria-label="Hisobot davri"></label>
+          <div class="user-pill"><div class="user-avatar">B</div><div><strong id="userEmailLabel">Buxgalter</strong><span>Administrator</span></div></div>
+        </div>
+      </header>
+      <div id="pageContent" class="page-content"><div class="loading-state"><div class="loader"></div><span>Ma’lumotlar yuklanmoqda...</span></div></div>
+      <footer class="app-footer"><span>© <span id="yearNow"></span> Soliq Nazorat</span><span>Shaxsiy foydalanish uchun</span></footer>
+    </section>
+  </div>
+
+  <input id="pfxFileInput" type="file" accept=".pfx,.p12,application/x-pkcs12,application/octet-stream" hidden>
+
+  <dialog id="orgDialog" class="modal-dialog">
+    <form id="orgForm" class="modal-form">
+      <div class="modal-head"><div><p class="eyebrow">TASHKILOT KARTASI</p><h2 id="orgDialogTitle">Yangi tashkilot</h2></div><button type="button" class="icon-btn" data-close-dialog="orgDialog" aria-label="Yopish">×</button></div>
+      <input id="orgId" type="hidden">
+      <div class="form-grid">
+        <label class="span-2">Tashkilot nomi *<input id="orgName" required maxlength="180" placeholder="Masalan, BARAKA MCHJ"></label>
+        <label>INN / STIR *<input id="orgInn" required inputmode="numeric" maxlength="20" placeholder="STIR raqami"></label>
+        <label>Telefon raqami<input id="orgPhone" type="tel" maxlength="40" placeholder="+998 90 123 45 67"></label>
+        <label class="span-2">Direktor ism-familiyasi<input id="orgDirector" maxlength="180" placeholder="Ism Familiya"></label>
+        <label class="span-2">Oylik xizmat haqi (so‘m)<input id="orgFee" type="number" min="0" step="1000" value="0" required></label>
+        <label class="span-2">Moliyaviy hisob boshlanadigan oy<input id="orgBillingStart" type="month" required></label>
+      </div>
+      <div class="modal-section-head"><div><h3>Hisobot turlari</h3><p class="muted">Faqat shu tashkilot topshiradigan hisobotlarni belgilang.</p></div></div>
+      <div id="reportChoices" class="report-choices">
+        <label class="choice"><input type="checkbox" name="reportChoice" value="Aylanma solig‘i"><span>Aylanma solig‘i</span></label>
+        <label class="choice"><input type="checkbox" name="reportChoice" value="QQS"><span>QQS</span></label>
+        <label class="choice"><input type="checkbox" name="reportChoice" value="Foyda solig‘i"><span>Foyda solig‘i</span></label>
+        <label class="choice"><input type="checkbox" name="reportChoice" value="JShDS va ijtimoiy soliq"><span>JShDS va ijtimoiy soliq</span></label>
+        <label class="choice"><input type="checkbox" name="reportChoice" value="Ish haqi hisoboti"><span>Ish haqi hisoboti</span></label>
+        <label class="choice"><input type="checkbox" name="reportChoice" value="Mol-mulk solig‘i"><span>Mol-mulk solig‘i</span></label>
+        <label class="choice"><input type="checkbox" name="reportChoice" value="Yer solig‘i"><span>Yer solig‘i</span></label>
+        <label class="choice"><input type="checkbox" name="reportChoice" value="Boshqa majburiy hisobot"><span>Boshqa majburiy hisobot</span></label>
+      </div>
+      <label class="custom-report-label">Qo‘shimcha hisobotlar (vergul bilan ajrating)<input id="customReports" placeholder="Masalan: Statistika, Ekologiya"></label>
+      <p class="muted small">Har bir hisobot uchun dastlabki muddat 15-sana qilib belgilanadi. Keyin hisobotlar nazorati bo‘limida muddatni o‘zgartirish mumkin.</p>
+      <div class="modal-actions"><button class="btn btn-light" type="button" data-close-dialog="orgDialog">Bekor qilish</button><button id="saveOrgBtn" class="btn btn-primary" type="submit">Saqlash</button></div>
+      <p id="orgFormError" class="form-error hidden"></p>
+    </form>
+  </dialog>
+
+  <dialog id="paymentDialog" class="modal-dialog compact-dialog">
+    <form id="paymentForm" class="modal-form">
+      <div class="modal-head"><div><p class="eyebrow">TO‘LOV QAYDI</p><h2>To‘lov kiritish</h2><p id="paymentOrgName" class="muted"></p></div><button type="button" class="icon-btn" data-close-dialog="paymentDialog" aria-label="Yopish">×</button></div>
+      <input id="paymentOrgId" type="hidden"><input id="paymentPeriod" type="hidden">
+      <label>To‘lov summasi (so‘m)<input id="paymentAmount" type="number" min="1" step="1000" required placeholder="500000"></label>
+      <label>To‘lov sanasi<input id="paymentDate" type="date" required></label>
+      <label>Izoh (ixtiyoriy)<input id="paymentNote" maxlength="250" placeholder="Masalan, bank orqali to‘lov"></label>
+      <div class="modal-actions"><button class="btn btn-light" type="button" data-close-dialog="paymentDialog">Bekor qilish</button><button class="btn btn-primary" type="submit">To‘lovni saqlash</button></div>
+      <p id="paymentFormError" class="form-error hidden"></p>
+    </form>
+  </dialog>
+
+  <dialog id="historyDialog" class="modal-dialog">
+    <div class="modal-form">
+      <div class="modal-head"><div><p class="eyebrow">MOLIYAVIY TARIX</p><h2 id="historyTitle">To‘lovlar tarixi</h2></div><button type="button" class="icon-btn" data-close-dialog="historyDialog" aria-label="Yopish">×</button></div>
+      <div id="historyContent" class="history-content"></div>
+      <div class="modal-actions"><button class="btn btn-light" type="button" data-close-dialog="historyDialog">Yopish</button></div>
+    </div>
+  </dialog>
+</body>
+</html>
